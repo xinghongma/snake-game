@@ -1,0 +1,51 @@
+[
+  {
+    "id": "46a6161b-8396-48e9-8e7e-ce0beea182d7",
+    "username": "584712",
+    "passwordHash": null,
+    "isGuest": true,
+    "createdAt": "2026-03-02T09:07:43.737Z"
+  },
+  {
+    "id": "038daaa3-5e81-44af-a8fc-77f5d36f90c9",
+    "username": "testplayer",
+    "passwordHash": "$2a$10$NAH25gB8rmPmAh7WzDRZzOwOnxZe8eoZG08iOCBGVkKQBUJqLKiqO",
+    "isGuest": false,
+    "createdAt": "2026-03-02T09:09:11.385Z"
+  },
+  {
+    "id": "b3a6afc9-0a9b-473b-b13e-0fa8476a5a6b",
+    "username": "287971",
+    "passwordHash": null,
+    "isGuest": true,
+    "createdAt": "2026-03-02T09:13:22.184Z"
+  },
+  {
+    "id": "109fed7a-5af7-4c84-928a-5836c6de58dc",
+    "username": "pony",
+    "passwordHash": "$2a$10$SEZ.6j1YPImzTlOcRZIXFOha0nGdAvwTcnZwEh3DXTQiLGL07MJVi",
+    "isGuest": false,
+    "createdAt": "2026-03-02T10:33:05.743Z"
+  },
+  {
+    "id": "c49ea78b-6a78-491e-909f-2ffb13789654",
+    "username": "ponyma",
+    "passwordHash": "$2a$10$RsQFY3o8pF0pziodtn0GLuMfG8.AlnxRTPlN8m6/XWdGWGbolpwne",
+    "isGuest": false,
+    "createdAt": "2026-03-02T10:33:55.615Z"
+  },
+  {
+    "id": "1a903b25-67e7-468d-a2c1-09ed17938813",
+    "username": "744156",
+    "passwordHash": null,
+    "isGuest": true,
+    "createdAt": "2026-03-02T10:38:55.204Z"
+  },
+  {
+    "id": "f0fecb57-abbe-41f4-95bb-c65a00830f5f",
+    "username": "player2",
+    "passwordHash": "$2a$10$961VvYy27jEEN0hAruIPPuolUZI.Jcvr3SANKP38suGcTY9L7hBre",
+    "isGuest": false,
+    "createdAt": "2026-03-02T12:25:51.445Z"
+  }
+]

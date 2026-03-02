@@ -1,0 +1,32 @@
+[
+  {
+    "id": "1d2fa8f3-6d4c-4204-b3f0-dd18715098b1",
+    "userId": "038daaa3-5e81-44af-a8fc-77f5d36f90c9",
+    "username": "testplayer",
+    "isGuest": false,
+    "score": 0,
+    "duration": 1,
+    "loginAt": "2026-03-02T09:09:46.872Z",
+    "playedAt": "2026-03-02T09:10:04.563Z"
+  },
+  {
+    "id": "67645314-2cca-456f-a98b-40e9c5af1434",
+    "userId": "c49ea78b-6a78-491e-909f-2ffb13789654",
+    "username": "ponyma",
+    "isGuest": false,
+    "score": 0,
+    "duration": 1,
+    "loginAt": "2026-03-02T10:34:07.459Z",
+    "playedAt": "2026-03-02T10:34:24.000Z"
+  },
+  {
+    "id": "754ea5f3-0d40-4990-ab03-95f19d59fc80",
+    "userId": "f0fecb57-abbe-41f4-95bb-c65a00830f5f",
+    "username": "player2",
+    "isGuest": false,
+    "score": 0,
+    "duration": 1,
+    "loginAt": "2026-03-02T12:28:45.976Z",
+    "playedAt": "2026-03-02T12:29:56.725Z"
+  }
+]

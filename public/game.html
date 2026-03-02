@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>贪吃蛇 · 游戏</title>
+    <meta name="description" content="贪吃蛇网页游戏 — 挑战高分，登上排行榜！" />
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* ── Page Content ── */
+        .page-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* 整体居中 */
+            justify-content: flex-start;
+            flex: 1;
+            padding: 0 20px 32px;
+            width: 100%;
+        }
+
+        /* ── Topbar ── */
+        .topbar {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 24px;
+        }
+
+        .topbar-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .topbar-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        /* ═══════════════════════════════════════
+       Main Game Area  (Canvas | Info Panel)
+       ═══════════════════════════════════════ */
+        .game-main {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            justify-content: center;
+            /* 内容居中 */
+        }
+
+        /* ── Canvas Column ── */
+        .canvas-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+        }
+
+        #game-canvas {
+            display: block;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            box-shadow: 0 0 40px rgba(167, 139, 250, 0.18), var(--shadow-card);
+            background: #0d0d18;
+            /* Canvas 物理尺寸由 JS 决定（500×500） */
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .controls .btn {
+            min-width: 96px;
+        }
+
+        /* ── Info Panel (右侧) ── */
+        .info-panel {
+            width: 240px;
+            flex-shrink: 0;
+        }
+
+        .info-card {
+            padding: 20px;
+        }
+
+        .info-card h3 {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .stat-value {
+            font-size: 22px;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .stat-value.grad-text {
+            font-size: 26px;
+        }
+
+        .level-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            background: rgba(167, 139, 250, 0.15);
+            border: 1px solid rgba(167, 139, 250, 0.3);
+            color: #c4b5fd;
+        }
+
+        /* ═══════════════════════════════════════
+       Leaderboard Section (Canvas 下方)
+       ═══════════════════════════════════════ */
+        .leaderboard-section {
+            margin-top: 20px;
+            width: 100%;
+            /* 跟随 page-content 的宽度 */
+            max-width: 780px;
+            /* 防止过宽 */
+        }
+
+        /* 当 game-main 有确定宽度时，leaderboard-section 跟随 */
+        .game-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .leaderboard-card {
+            padding: 20px 24px;
+            width: 100%;
+        }
+
+        .leaderboard-card h3 {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+        }
+
+        /* 排行榜用两列 Grid 横向展示 */
+        #leaderboard-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2px 24px;
+        }
+
+        .lb-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 6px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .lb-item-me {
+            background: rgba(167, 139, 250, 0.08);
+            border-radius: 6px;
+        }
+
+        .lb-rank {
+            width: 26px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-faint);
+            flex-shrink: 0;
+        }
+
+        .lb-rank.gold {
+            color: #fbbf24;
+        }
+
+        .lb-rank.silver {
+            color: #d1d5db;
+        }
+
+        .lb-rank.bronze {
+            color: #fb923c;
+        }
+
+        .lb-name-col {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .lb-name {
+            font-size: 13px;
+            color: var(--text);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .lb-you {
+            font-size: 10px;
+            color: #a78bfa;
+            margin-left: 3px;
+        }
+
+        .lb-sub {
+            font-size: 11px;
+            color: var(--text-faint);
+            margin-top: 1px;
+        }
+
+        .lb-score {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+            flex-shrink: 0;
+        }
+
+        .lb-empty {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: var(--text-faint);
+            font-size: 13px;
+            padding: 16px 0;
+        }
+
+        .lb-footer {
+            grid-column: 1 / -1;
+            margin-top: 10px;
+        }
+
+        /* ── Game Over Modal ── */
+        .game-over-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .game-over-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .go-stat {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 14px;
+            text-align: center;
+        }
+
+        .go-stat-val {
+            font-size: 26px;
+            font-weight: 700;
+            line-height: 1.1;
+        }
+
+        .go-stat-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .go-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .go-actions .btn {
+            flex: 1;
+        }
+
+        /* ── Mobile ── */
+        .swipe-hint {
+            font-size: 12px;
+            color: var(--text-faint);
+            text-align: center;
+            display: none;
+        }
+
+        @media (max-width: 760px) {
+            .game-main {
+                flex-direction: column;
+                align-items: center;
+                width: 100%;
+            }
+
+            .info-panel {
+                width: 100%;
+            }
+
+            #game-canvas {
+                width: 100% !important;
+                height: auto !important;
+            }
+
+            #leaderboard-list {
+                grid-template-columns: 1fr;
+            }
+
+            .swipe-hint {
+                display: block;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-orbs" aria-hidden="true">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <div class="page-content">
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="topbar-logo">
+                <span style="font-size:22px">🐍</span>
+                <span class="grad-text">贪吃蛇</span>
+            </div>
+            <div class="topbar-user">
+                <span class="badge badge-guest" id="guest-badge" style="display:none">游客</span>
+                <span class="user-name" id="display-username">加载中…</span>
+                <button class="btn btn-ghost btn-sm" id="logout-btn" onclick="handleLogout()">登出</button>
+            </div>
+        </header>
+
+        <!-- Wrapper keeps canvas+info and leaderboard aligned -->
+        <div class="game-wrapper">
+
+            <!-- Top row: Canvas (left) + Info Panel (right) -->
+            <div class="game-main">
+
+                <!-- Canvas Column -->
+                <div class="canvas-col">
+                    <canvas id="game-canvas" width="500" height="500" aria-label="贪吃蛇游戏区域"></canvas>
+                    <p class="swipe-hint">👆 滑动屏幕控制方向</p>
+                    <div class="controls">
+                        <button class="btn btn-primary" id="start-btn" onclick="gameController.start()">▶ 开始</button>
+                        <button class="btn btn-ghost" id="pause-btn" onclick="gameController.togglePause()" disabled>⏸
+                            暂停</button>
+                        <button class="btn btn-ghost" id="restart-btn" onclick="gameController.restart()" disabled>↺
+                            重开</button>
+                    </div>
+                </div>
+
+                <!-- Info Panel (right of canvas) -->
+                <div class="info-panel">
+                    <div class="glass info-card">
+                        <h3>本局信息</h3>
+                        <div class="stat-row">
+                            <span class="stat-label">当前分数</span>
+                            <span class="stat-value grad-text" id="score-display">0</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">游戏时长</span>
+                            <span class="stat-value" id="time-display">00:00</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">个人最高</span>
+                            <span class="stat-value" id="best-display">—</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">速度等级</span>
+                            <span class="level-pill" id="level-display">🟢 等级 1</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /game-main -->
+
+            <!-- Leaderboard (below canvas, same width as game-main) -->
+            <div class="leaderboard-section">
+                <div class="glass leaderboard-card">
+                    <h3>🏆 排行榜 Top 10</h3>
+                    <div id="leaderboard-list">
+                        <p class="lb-empty">暂无记录</p>
+                    </div>
+                    <div class="lb-footer">
+                        <button class="btn btn-ghost btn-sm w-full" onclick="recordsManager.loadLeaderboard()"
+                            style="font-size:12px">↻ 刷新排行榜</button>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /game-wrapper -->
+    </div>
+
+    <!-- Game Over Modal -->
+    <div class="modal-overlay" id="game-over-modal" role="dialog" aria-modal="true" aria-labelledby="go-title">
+        <div class="glass modal-card" style="max-width:380px;">
+            <div class="text-center">
+                <div class="game-over-title grad-text-secondary" id="go-title">💀 游戏结束</div>
+                <p class="text-muted" id="go-subtitle" style="font-size:13px;margin-top:4px"></p>
+            </div>
+            <div class="game-over-stats">
+                <div class="go-stat">
+                    <div class="go-stat-val grad-text" id="go-score">0</div>
+                    <div class="go-stat-label">最终分数</div>
+                </div>
+                <div class="go-stat">
+                    <div class="go-stat-val" id="go-time">00:00</div>
+                    <div class="go-stat-label">游戏时长</div>
+                </div>
+                <div class="go-stat">
+                    <div class="go-stat-val" id="go-length">1</div>
+                    <div class="go-stat-label">蛇的长度</div>
+                </div>
+                <div class="go-stat">
+                    <div class="go-stat-val" id="go-level">1</div>
+                    <div class="go-stat-label">最终等级</div>
+                </div>
+            </div>
+            <div class="msg msg-info show" id="go-save-msg" style="text-align:center">
+                💾 正在保存记录…
+            </div>
+            <div class="go-actions mt-12">
+                <button class="btn btn-primary" onclick="gameController.restart(); closeModal()">再来一局</button>
+                <button class="btn btn-ghost" onclick="closeModal()">查看排行榜</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/snake.js"></script>
+    <script src="js/records.js"></script>
+    <script>
+        // Auth guard on load
+        (async () => {
+            const res = await fetch('/api/auth/me');
+            if (!res.ok) {
+                window.location.replace('/');
+                return;
+            }
+            const user = await res.json();
+            document.getElementById('display-username').textContent = user.username;
+            if (user.isGuest) {
+                document.getElementById('guest-badge').style.display = 'inline-flex';
+            }
+            recordsManager.init(user);
+        })();
+
+        async function handleLogout() {
+            await fetch('/api/auth/logout', { method: 'POST' });
+            window.location.replace('/');
+        }
+
+        function closeModal() {
+            document.getElementById('game-over-modal').classList.remove('show');
+            recordsManager.loadLeaderboard();
+        }
+    </script>
+</body>
+
+</html>
